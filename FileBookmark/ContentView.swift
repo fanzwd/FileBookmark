@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var _selected = 0
+    
     var body: some View {
         VStack {
             Button {
@@ -41,7 +43,31 @@ struct ContentView: View {
             } label: {
                 Text("读取文件内容")
             }
-
+            
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal) {
+                    HStack(spacing: -20) {
+                        ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].indices, id: \.self) { index in
+                            if (index % 2 == 1) {
+                                Text("")
+                                    .frame(width: 60, height: 100)
+                            } else {
+                                Text("\(index)")
+                                    .frame(width: 100, height: 100)
+                                    .background(_selected == index ? .red : .green)
+                                    .onTapGesture { _ in
+                                        _selected = index
+                                    }
+                            }
+                        }
+                    }
+                }
+                .onChange(of: _selected) { newValue in
+                    withAnimation {
+                        proxy.scrollTo(newValue + 1 >= 11 ? newValue : newValue + 1);
+                    }
+                }
+            }
         }
         .padding()
     }
